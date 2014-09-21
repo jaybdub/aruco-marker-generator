@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <title id="title">Aruco Marker</title>
+        <style type="text/css">
+            canvas {
+                margin: 0px;
+				
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+		<div align="center">
+		<h2 id="marker_header"></h2>
+		<p id="marker_info_p"></p>
+        <div id="markers"></div>
+		</div>
+        <script type="text/javascript" src="cv.js"></script>
+        <script type="text/javascript" src="aruco.js"></script>
+        <script type="text/javascript" src="markers.js"></script>
+        <script type="text/javascript"> 
+            window.onload = function(){
+				var title = document.getElementById("title");
+				var marker_header = document.getElementById("marker_header");
+				var marker_info_p = document.getElementById("marker_info_p");
+				var marker_id = getQueryVariable("id");
+				var marker_size_mm = getQueryVariable("size_mm");
+				var marker_padding_mm = getQueryVariable("padding_mm");
+				var error_str = "";
+				var should_print = true;
+				if (!marker_id) {
+					error_str += "Error:  No marker id provided\n";
+					should_print = false;
+				}
+				else if ((marker_id < 0)||(marker_id > 1023)) {
+					error_str += "Error: Marker id must be between 0 and 1023\n";
+					should_print = false;
+				}
+				if (!marker_size_mm) {
+					//error_str += "Warning: No marker size provided, using default 100mm\n";
+					marker_size_mm = 100;
+				}if (!marker_padding_mm) {
+					//error_str += "Warning: No marker padding provided, using default 10mm\n";
+					marker_padding_mm = 10;
+				}
+				if(error_str!=""){
+					alert(error_str);
+				}
+				if(should_print){
+					marker_id = parseInt(marker_id);
+					marker_size_mm = parseInt(marker_size_mm);
+					marker_padding_mm = parseInt(marker_padding_mm);
+					title.innerHTML = "Aruco Marker #" + marker_id;
+					marker_header.innerHTML = "Marker #" + marker_id;
+					//marker_info_p.innerHTML = "Id: " + marker_id + "</br>";
+					marker_info_p.innerHTML += "Size: " + marker_size_mm +"mm" + "</br>";
+					marker_info_p.innerHTML += "Padding: " + marker_padding_mm + "mm";
+					
+					var div = document.getElementById("markers");
+					var canvas = makeMarker(marker_id,marker_size_mm,marker_padding_mm);
+					var ctx = canvas.getContext('2d');
+					ctx.strokeStyle = 'black';
+					ctx.rect(0,0,canvas.height,canvas.width);
+					ctx.stroke();
+					div.appendChild(canvas);
+				}
+            };
+        </script>
+    </body>
+</html>
+
